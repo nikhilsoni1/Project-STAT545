@@ -50,6 +50,12 @@ for (i in 1:30)
   print(goto)
 }
 
+D_k<-burn_in[11:30]
 
+temp<-list()
+for(i in 1:30){
+  temp[[i]]<-burn_in[[i]][["url"]]
+}
+unique(unlist(temp))
 
 
