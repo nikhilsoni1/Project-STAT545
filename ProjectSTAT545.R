@@ -92,58 +92,68 @@ pager<-function(root, seed.record=FALSE, seed.val=NULL)
 }
 
 
-MHalgo<-function(a,b)
-{
-
-  beta<-(0+min(a))
-  print(beta/b)
-  acc<-beta/b
-  U<-runif(1)
-  for(i in 1:395){
-    if(U<acc)
-    {
-      random_sample[[i]]<-
-    }
-  }
-}
-
 
 # operations----
-rm(i, burn_in)
-root<-"http://www.imdb.com"
-burn_in1<-list()
-goto<-root
-cat("\014")
-for (i in 1:1000)
+root<-c("http://www.imdb.com",
+        "http://www.wikipedia.com",
+        "http://www.thehindu.com",
+        "https://www.purdue.edu")
+root1<-c("https://www.webmd.com/pets/cats/default.htm",
+         "https://www.vanityfair.com/style/2018/08/dog-cloning-animal-sooam-hwang",
+         "https://www.worldwildlife.org/species/tiger",
+         "https://www.smithsonianmag.com/science-nature/the-truth-about-lions-11558237/")
+store<-list()
+store1<-list()
+for(i in 1:length(root))
 {
-  burn_in[[i]]<-pager(root)
-  print(i)
+  print(root[i])
+  store[[i]]<-sample_url(root[i])
+}
+for(i in 1:length(root1))
+{
+  print(root1[i])
+  store1[[i]]<-sample_url(root1[i])
 }
 
-X_k<-burn_in[981:1000]
-D_k<-unique(unlist(list_feature(X_k, "url")))
-D_k.prob<-list()
-D_k.MStep<-list()
-cat("\014")
-COUNTER<-1
-for(i in 1:length(D_k))
+sample_url<-function(root)
 {
-  for(j in 1:10)
+  burn_in<-list()
+  goto<-root
+  for (i in 1:30)
   {
-    print(paste0(i,j))
-    D_k.MStep[[COUNTER]]<-pager(D_k[i])$url
-    COUNTER<-COUNTER+1
+    burn_in[[i]]<-pager(root)
+    print(i)
   }
-}
-D_k.MStep<-unlist(D_k.MStep)
-D_k.freq<-unclass(table(D_k.MStep))
 
-for(i in 1:length(D_k))
-{
-  a<-D_k.freq[D_k[i]]/sum(D_k.freq)
-  print(a)
-  D_k.prob[[i]]<-D_k.freq[D_k[i]]/sum(D_k.freq)
+  X_k<-burn_in[11:30]
+  D_k<-unique(unlist(list_feature(X_k, "url")))
+  D_k.prob<-list()
+  D_k.MStep<-list()
+  COUNTER<-1
+  for(i in 1:length(D_k))
+  {
+    for(j in 1:10)
+    {
+      print(paste0(i,j))
+      D_k.MStep[[COUNTER]]<-pager(D_k[i])$url
+      COUNTER<-COUNTER+1
+    }
+  }
+  D_k.MStep<-unlist(D_k.MStep)
+  D_k.freq<-unclass(table(D_k.MStep))
+
+  for(i in 1:length(D_k))
+  {
+    a<-D_k.freq[D_k[i]]/sum(D_k.freq)
+    print(a)
+    D_k.prob[[i]]<-D_k.freq[D_k[i]]/sum(D_k.freq)
+  }
+  D_k.prob<-unlist(D_k.prob)
+  names(D_k.prob)<-D_k
+  D_k.prob<-D_k.prob[!is.na(D_k.prob)]
+  beta<-(0+min(D_k.prob))/2
+  acc<-beta/D_k.prob
+  U<-runif(length(acc))
+  sample_store<-D_k.prob[U>acc]
+  return(names(sample_store))
 }
-D_k.prob<-unlist(D_k.prob)
-names(D_k.prob)<-D_k
-D_k.prob[is.na(D_k.prob)]<-1e-07
