@@ -1,6 +1,8 @@
 save(list=ls(all=T), file="ProjectStat545.RData")
 setwd("~/Google Drive/Purdue University/Academics/Sem-3/STAT545/Project-STAT545")
 load("ProjectStat545.RData")
+setwd("C:/Users/manan/OneDrive/Documents/GitHub/Project-STAT545")
+
 
 # header----
 install.packages("rvest")
