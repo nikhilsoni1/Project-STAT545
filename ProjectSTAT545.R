@@ -109,29 +109,41 @@ MHalgo<-function(a,b)
 
 
 # operations----
-rm(i, burn_in1)
+rm(i, burn_in)
 root<-"http://www.imdb.com"
-burn_in1<-list()
+burn_in<-list()
 goto<-root
 cat("\014")
 for (i in 1:1000)
 {
-  a<-pager(goto)
-  burn_in1[[i]]<-a
-  goto<-a$url
-}
-
-D_k<-burn_in1[100:663]
-D_k.urls<-unique(unlist(list_feature(D_k, "url")))
-new_page<-list()
-for(i in 1:500)
-{
-  new_page[[i]]<-pager(sample(D_k.urls,1))
+  burn_in[[i]]<-pager(root)
   print(i)
 }
-freq<-unclass(table(unlist(list_feature(new_page, "url"))))
-t<-freq/500
 
-X<-burn_in1[100:663]
-freq.X<-unclass(table(unlist(list_feature(X, "url"))))
-t.x<-freq.X/length(X)
+X_k<-burn_in[981:1000]
+D_k<-unique(unlist(list_feature(X_k, "url")))
+D_k.prob<-list()
+D_k.MStep<-list()
+cat("\014")
+COUNTER<-1
+for(i in 1:length(D_k))
+{
+  for(j in 1:10)
+  {
+    print(paste0(i,j))
+    D_k.MStep[[COUNTER]]<-pager(D_k[i])$url
+    COUNTER<-COUNTER+1
+  }
+}
+D_k.MStep<-unlist(D_k.MStep)
+D_k.freq<-unclass(table(D_k.MStep))
+
+for(i in 1:length(D_k))
+{
+  a<-D_k.freq[D_k[i]]/sum(D_k.freq)
+  print(a)
+  D_k.prob[[i]]<-D_k.freq[D_k[i]]/sum(D_k.freq)
+}
+D_k.prob<-unlist(D_k.prob)
+names(D_k.prob)<-D_k
+D_k.prob[is.na(D_k.prob)]<-1e-07
